@@ -27,7 +27,7 @@ endpoint;
 finalidade;
 parâmetros, quando houver;
 corpo da requisição, quando necessário; e
-exemplo de resposta. -->
+exemplo de resposta. 
 
 
 
@@ -122,6 +122,24 @@ A sequência recomendada para eu aprender como funciona corretamente cada parte 
 11. README
 
 _________________________________________________
+
+Comandos abaixo e suas finalidades no uso de linhas de código :
+
+insertId     → qual foi o ID criado?
+affectedRows → quantas linhas foram afetadas?
+
+- - - - - - - - - - - - - - - - - - - - - - - - -
+
+SELECT → buscar
+INSERT → criar
+UPDATE → editar
+DELETE → excluir
+
+
+
+
+
+
 
 
 -->
