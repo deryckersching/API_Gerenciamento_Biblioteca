@@ -105,11 +105,11 @@ A sequência recomendada para eu aprender como funciona corretamente cada parte 
         ↓
 3. Servidor Express ✅
         ↓
-4. Testar conexão com MySQL ← ESTOU AQUI AGORA
+4. Testar conexão com MySQL 
         ↓
-5. Criar Model
+5. Criar Model ✅
         ↓
-6. Criar Controller
+6. Criar Controller ← ESTOU AQUI AGORA
         ↓
 7. Criar Routes
         ↓

@@ -1,4 +1,4 @@
-const require = db.query("../config/database");
+const db = require("../config/database");
 
 const buscarTodos = async () => {
     const[resultado] = await db.query(
@@ -41,7 +41,7 @@ const editar = async (id, nome) => {
     };
 };
 
-const excluir = async (id) => {
+const excluir = async (id, nome) => {
     cons[resultado] = await db.query(
         "DELETE FROM generos WHERE id = ?",
     );
