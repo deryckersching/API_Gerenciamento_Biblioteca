@@ -6,7 +6,7 @@ const buscarGeneros = async (req, res) => {
     res.json(generos);
 };
 
-const buscarGeneroPorId = async (req, res) => {
+const buscarGenerosPorId = async (req, res) => {
     const id = req.params.id;
     const genero = await generosModel.buscarPorId(id);
 
@@ -66,7 +66,7 @@ const excluirGenero = async (req, res) => {
 
 module.exports = {
     buscarGeneros,
-    buscarGeneroPorId,
+    buscarGenerosPorId,
     criarGenero,
     editarGenero,
     excluirGenero

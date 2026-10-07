@@ -6,7 +6,7 @@ const buscarLivros = async (req, res) => {
     res.json(livros);
 };
 
-const buscarLivroPorId = async (req, res) => {
+const buscarLivrosPorId = async (req, res) => {
     const id = req.params.id;
     const livro = await livrosModel.buscarPorId(id);
 
@@ -74,7 +74,7 @@ const excluirLivro = async (req, res) => {
 
 module.exports = {
     buscarLivros,
-    buscarLivroPorId,
+    buscarLivrosPorId,
     criarLivro,
     editarLivro,
     excluirLivro

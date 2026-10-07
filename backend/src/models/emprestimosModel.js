@@ -1,12 +1,12 @@
 const emprestimosModel = require("../models/emprestimosModel");
 
-const buscarEmprestimos = async (req, res) => {
+const buscarTodos = async (req, res) => {
     const emprestimos = await emprestimosModel.buscarTodos();
 
     res.json(emprestimos);
 };
 
-const buscarEmprestimosPorId = async (req, res) => {
+const buscarTodosPorId = async (req, res) => {
     const id = req.params.id;
     const emprestimo = await emprestimosModel.buscarPorId(id);
 
@@ -19,7 +19,7 @@ const buscarEmprestimosPorId = async (req, res) => {
     res.json(emprestimo);
 };
 
-const criarEmprestimo = async (req, res) => {
+const criar = async (req, res) => {
     const novoEmprestimo = await emprestimosModel.criar(
         req.body.data_emprestimo,
         req.body.data_devolucao,
@@ -30,7 +30,7 @@ const criarEmprestimo = async (req, res) => {
     res.status(201).json(novoEmprestimo);
 };
 
-const editarEmprestimo = async (req, res) => {
+const editar = async (req, res) => {
     const id = req.params.id;
 
     const emprestimo = await emprestimosModel.buscarPorId(id);
@@ -52,7 +52,7 @@ const editarEmprestimo = async (req, res) => {
     res.json(emprestimoAtualizado);
 };
 
-const excluirEmprestimo = async (req, res) => {
+const excluir = async (req, res) => {
     const id = req.params.id;
 
     const emprestimo = await emprestimosModel.buscarPorId(id);
@@ -71,9 +71,9 @@ const excluirEmprestimo = async (req, res) => {
 };
 
 module.exports = {
-    buscarEmprestimos,
-    buscarEmprestimosPorId,
-    criarEmprestimo,
-    editarEmprestimo,
-    excluirEmprestimo
+    buscarTodos,
+    buscarTodosPorId,
+    criar,
+    editar,
+    excluir
 }

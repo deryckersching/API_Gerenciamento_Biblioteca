@@ -72,7 +72,7 @@ const excluirEmprestimo = async (req, res) => {
 
 module.exports = {
     buscarEmprestimos,
-    buscarEmprestimoPorId,
+    buscarEmprestimosPorId,
     criarEmprestimo,
     editarEmprestimo,
     excluirEmprestimo

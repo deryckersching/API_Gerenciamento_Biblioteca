@@ -6,7 +6,7 @@ const buscarUsuarios = async (req, res) => {
     res.json(usuarios);
 };
 
-const buscarUsuarioPorId = async (req, res) => {
+const buscarUsuariosPorId = async (req, res) => {
     const id = req.params.id;
     const usuario = await usuariosModel.buscarPorId(id);
 
@@ -74,7 +74,7 @@ const excluirUsuario = async (req, res) => {
 
 module.exports = {
     buscarUsuarios,
-    buscarUsuarioPorId,
+    buscarUsuariosPorId,
     criarUsuario,
     editarUsuario,
     excluirUsuario
