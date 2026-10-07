@@ -1,16 +1,16 @@
 const db = require("../config/database");
 
 const buscarTodos = async () => {
-    const[resultado] = await db.query(
-        "SELECT * FROM generos "
+    const [resultado] = await db.query(
+        "SELECT * FROM generos"
     );
 
     return resultado;
 };
 
 const buscarPorId = async (id) => {
-    const[resultado] = await db.query(
-        "SELECT * FROM resultado WHERE id = ?",
+    const [resultado] = await db.query(
+        "SELECT * FROM generos WHERE id = ?",
         [id]
     );
 
@@ -18,8 +18,8 @@ const buscarPorId = async (id) => {
 };
 
 const criar = async (nome) => {
-    const[resultado] = await db.query(
-        "INSERT INTO resultado (nome)",
+    const [resultado] = await db.query(
+        "INSERT INTO generos (nome) VALUES (?)",
         [nome]
     );
 
@@ -31,7 +31,7 @@ const criar = async (nome) => {
 
 const editar = async (id, nome) => {
     await db.query(
-        "UPDATE resultado SET nome = ? WHERE id = ?",
+        "UPDATE generos SET nome = ? WHERE id = ?",
         [nome, id]
     );
 
@@ -41,9 +41,10 @@ const editar = async (id, nome) => {
     };
 };
 
-const excluir = async (id, nome) => {
-    cons[resultado] = await db.query(
+const excluir = async (id) => {
+    const [resultado] = await db.query(
         "DELETE FROM generos WHERE id = ?",
+        [id]
     );
 
     return resultado.affectedRows;

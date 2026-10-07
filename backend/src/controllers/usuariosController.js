@@ -1,66 +1,71 @@
 const usuariosModel = require("../models/usuariosModel");
 
-const buscarUsuarios = (req, res) => {
-    response.json(usuariosModel);
+const buscarUsuarios = async (req, res) => {
+    const usuarios = await usuariosModel.buscarTodos();
+
+    res.json(usuarios);
 };
 
-const buscarUsuariosPorId = (req, res) => {
+const buscarUsuarioPorId = async (req, res) => {
     const id = req.params.id;
-    const usuario = usuariosModel.find(usuario => usuario.id == id);
+    const usuario = await usuariosModel.buscarPorId(id);
 
     if(!usuario) {
         return res.status(404).json({
             mensagem: "Usuário não encontrado"
         })
     }
-
-    res.json(usuario)
-};
-
-const criarUsuario = (req, res) => {
-    const novoUsuario = {
-        id: usuariosModel.length + 1,
-        nome_completo: req.body.nome_completo,
-        cpf: req.body.cpf,
-        email: req.body.email,
-        telefone: req.body.telefone,
-        data_nascimento: req.body.data_nascimento
-    }
-
-    usuariosModel.push(novoUsuario);
-    res.status(201).json(novoUsuario);
-};
-
-const editarUsuario = (req, res) => {
-    const id = req.params.id;
-    const usuario = usuariosModel.find(usuario => usuario.id == id);
-
-    if(!usuario) {
-        return res.status(404).json({
-            mensagem: "Usuário não encontrado"
-        })
-    }
-
-    usuario.nome_completo = req.body.nome_completo,
-    usuario.cpf = req.body.cpf,
-    usuario.email = req.body.email,
-    usuario.telefone = req.body.telefone,
-    usuario.data_nascimento = req.body.data_nascimento
 
     res.json(usuario);
 };
 
-const excluirUsuario = (req, res) => {
-    const id = req.params.id;
-    const usuarioIndex = usuariosModel.findIndex(usuario => usuario.id == id);
+const criarUsuario = async (req, res) => {
+    const novoUsuario = await usuariosModel.criar(
+        req.body.nome_completo,
+        req.body.cpf,
+        req.body.email,
+        req.body.telefone,
+        req.body.data_nascimento
+    );
 
-    if(usuarioIndex == -1) {
+    res.status(201).json(novoUsuario);
+};
+
+const editarUsuario = async (req, res) => {
+    const id = req.params.id;
+
+    const usuario = await usuariosModel.buscarPorId(id);
+
+    if(!usuario) {
         return res.status(404).json({
             mensagem: "Usuário não encontrado"
         })
     }
 
-    usuariosModel.splice(usuarioIndex, 1)
+    const usuarioAtualizado = await usuariosModel.editar(
+        id,
+        req.body.nome_completo,
+        req.body.cpf,
+        req.body.email,
+        req.body.telefone,
+        req.body.data_nascimento
+    );
+
+    res.json(usuarioAtualizado);
+};
+
+const excluirUsuario = async (req, res) => {
+    const id = req.params.id;
+
+    const usuario = await usuariosModel.buscarPorId(id);
+
+    if(!usuario) {
+        return res.status(404).json({
+            mensagem: "Usuário não encontrado"
+        })
+    }
+
+    await usuariosModel.excluir(id);
 
     res.json({
         mensagem: "Usuário excluído com sucesso!"
@@ -69,8 +74,8 @@ const excluirUsuario = (req, res) => {
 
 module.exports = {
     buscarUsuarios,
-    buscarUsuariosPorId, 
+    buscarUsuarioPorId,
     criarUsuario,
     editarUsuario,
     excluirUsuario
-}
+};

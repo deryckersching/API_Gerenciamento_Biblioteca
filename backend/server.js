@@ -7,6 +7,10 @@ const app = express();
 
 app.use(express.json());
 
+const autoresRoutes = require("./src/routes/autoresRoutes");
+
+app.use(autoresRoutes);
+
 const PORT = process.env.API_PORT || 3033;
 
 app.listen(PORT, () => {

@@ -1,39 +1,39 @@
 const db = require("../config/database");
 
 const buscarTodos = async () => {
-    const[resultado] = await db.query(
-        "SELECT * FROM autores"
+    const [autores] = await db.query(
+        "SELECT * FROM autores;"
     );
-    
-    return resultado;
-};
+
+    return autores;
+}
 
 const buscarPorId = async (id) => {
-    const[resultado] = await db.query(
-        "SELECT * FROM resultado WHERE id = ?",
+    const [autores] = await db.query(
+        "SELECT * FROM autores WHERE id = ?;",
         [id]
     );
 
-    return resultado[0];
-};
+    return autores[0];
+}
 
 const criar = async (nome_completo, nacionalidade, data_nascimento) => {
-    const resultado = await db.query(
-        "INSERT INTO resultado (nome_completo, nacionalidade, data_nascimento) VALUES (?, ?, ?)",
+    const autor = await db.query(
+        "INSERT INTO autores (nome_completo, nacionalidade, data_nascimento) VALUES (?, ?, ?);",
         [nome_completo, nacionalidade, data_nascimento]
     );
 
     return {
-        id: resultado.insertId,
+        id: autor.insertId,
         nome_completo,
         nacionalidade,
         data_nascimento
     };
-};
+}
 
 const editar = async (id, nome_completo, nacionalidade, data_nascimento) => {
     await db.query(
-        "UPDATE resultado SET nome_completo = ?, nacionalidade = ?, data_nascimento = ? WHERE id = ?",
+        "UPDATE autores SET nome_completo=?, nacionalidade=?, data_nascimento=? WHERE id=?",
         [nome_completo, nacionalidade, data_nascimento, id]
     );
 
@@ -43,16 +43,18 @@ const editar = async (id, nome_completo, nacionalidade, data_nascimento) => {
         nacionalidade,
         data_nascimento
     };
-};
+}
 
 const excluir = async (id) => {
-    const [resultado]  = await db.query(
-        "DELETE FROM resultado WHERE id = ?",
+    const [resultado] = await db.query(
+        "DELETE FROM autores WHERE id=?",
         [id]
     );
 
+    console.log("resultado.affectedRows:\n", resultado.affectedRows);
+
     return resultado.affectedRows;
-};
+}
 
 module.exports = {
     buscarTodos,

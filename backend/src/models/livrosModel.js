@@ -9,8 +9,8 @@ const buscarTodos = async () => {
 };
 
 const buscarPorId = async (id) => {
-    const[resultado] = await db.query(
-        "SELECT * FROM resultado WHERE id = ?",
+    const [resultado] = await db.query(
+        "SELECT * FROM livros WHERE id = ?",
         [id]
     );
 
@@ -18,8 +18,8 @@ const buscarPorId = async (id) => {
 };
 
 const criar = async (titulo, isbn, ano_publicacao, numero_paginas, sinopse) => {
-    const[resultado] = await db.query(
-        "INSERT INTO resultado (titulo, isbn, ano_publicacao, numero_paginas, sinopse) VALUES (?, ?, ?, ?, ?)",
+    const [resultado] = await db.query(
+        "INSERT INTO livros (titulo, isbn, ano_publicacao, numero_paginas, sinopse) VALUES (?, ?, ?, ?, ?)",
         [titulo, isbn, ano_publicacao, numero_paginas, sinopse]
     );
 
@@ -27,7 +27,7 @@ const criar = async (titulo, isbn, ano_publicacao, numero_paginas, sinopse) => {
         id: resultado.insertId,
         titulo,
         isbn,
-        ano_publicacao, 
+        ano_publicacao,
         numero_paginas,
         sinopse
     };
@@ -35,23 +35,24 @@ const criar = async (titulo, isbn, ano_publicacao, numero_paginas, sinopse) => {
 
 const editar = async (id, titulo, isbn, ano_publicacao, numero_paginas, sinopse) => {
     await db.query(
-        "UPDATE resultado SET titulo = ?, isbn = ?, ano_publicacao = ?, numero_paginas = ?, sinopse = ? WHERE id = ?",
+        "UPDATE livros SET titulo = ?, isbn = ?, ano_publicacao = ?, numero_paginas = ?, sinopse = ? WHERE id = ?",
         [titulo, isbn, ano_publicacao, numero_paginas, sinopse, id]
     );
 
     return {
-        id, 
+        id,
         titulo,
         isbn,
-        ano_publicacao, 
+        ano_publicacao,
         numero_paginas,
         sinopse
     };
 };
 
-const excluir = async (id, titulo, isbn, ano_publicacao, numero_paginas, sinopse) => {
-    const[resultado] = await db.query(
+const excluir = async (id) => {
+    const [resultado] = await db.query(
         "DELETE FROM livros WHERE id = ?",
+        [id]
     );
 
     return resultado.affectedRows;

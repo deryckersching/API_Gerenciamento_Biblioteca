@@ -1,7 +1,7 @@
 const db = require("../config/database");
 
 const buscarTodos = async () => {
-    const[resultado] = await db.query(
+    const [resultado] = await db.query(
         "SELECT * FROM usuarios"
     );
 
@@ -9,8 +9,8 @@ const buscarTodos = async () => {
 };
 
 const buscarPorId = async (id) => {
-    const[resultado] = await db.query(
-        "SELECT * FROM resultado WHERE id = ?",
+    const [resultado] = await db.query(
+        "SELECT * FROM usuarios WHERE id = ?",
         [id]
     );
 
@@ -18,8 +18,8 @@ const buscarPorId = async (id) => {
 };
 
 const criar = async (nome_completo, cpf, email, telefone, data_nascimento) => {
-    const[resultado] = await db.query(
-        "INSERT INTO resultado (nome_completo, cpf, email, telefone, data_nascimento)",
+    const [resultado] = await db.query(
+        "INSERT INTO usuarios (nome_completo, cpf, email, telefone, data_nascimento) VALUES (?, ?, ?, ?, ?)",
         [nome_completo, cpf, email, telefone, data_nascimento]
     );
 
@@ -35,7 +35,8 @@ const criar = async (nome_completo, cpf, email, telefone, data_nascimento) => {
 
 const editar = async (id, nome_completo, cpf, email, telefone, data_nascimento) => {
     await db.query(
-        "UPDATE resultado SET nome_completo = ?, cpf = ?, email = ?, telefone = ?, data_nascimento = ? WHERE id = ?",
+        "UPDATE usuarios SET nome_completo = ?, cpf = ?, email = ?, telefone = ?, data_nascimento = ? WHERE id = ?",
+        [nome_completo, cpf, email, telefone, data_nascimento, id]
     );
 
     return {
@@ -48,9 +49,10 @@ const editar = async (id, nome_completo, cpf, email, telefone, data_nascimento) 
     };
 };
 
-const excluir = async (id, nome_completo, cpf, email, telefone, data_nascimento) => {
-    const[resultado] = await db.query(
+const excluir = async (id) => {
+    const [resultado] = await db.query(
         "DELETE FROM usuarios WHERE id = ?",
+        [id]
     );
 
     return resultado.affectedRows;
