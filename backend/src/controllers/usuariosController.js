@@ -23,9 +23,13 @@ const criarUsuario = async (req, res) => {
     const novoUsuario = await usuariosModel.criar(
         req.body.nome_completo,
         req.body.cpf,
+        req.body.cpf_iv,
+        req.body.cpf_tag,
+        req.body.data_aniversario,
         req.body.email,
-        req.body.telefone,
-        req.body.data_nascimento
+        req.body.phone_number,
+        req.body.senha_hash,
+        req.body.senha_salt
     );
 
     res.status(201).json(novoUsuario);
@@ -46,9 +50,13 @@ const editarUsuario = async (req, res) => {
         id,
         req.body.nome_completo,
         req.body.cpf,
+        req.body.cpf_iv,
+        req.body.cpf_tag,
+        req.body.data_aniversario,
         req.body.email,
-        req.body.telefone,
-        req.body.data_nascimento
+        req.body.phone_number,
+        req.body.senha_hash,
+        req.body.senha_salt
     );
 
     res.json(usuarioAtualizado);

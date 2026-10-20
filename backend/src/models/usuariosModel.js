@@ -17,26 +17,26 @@ const buscarPorId = async (id) => {
     return resultado[0];
 };
 
-const criar = async (nome_completo, cpf, email, telefone, data_nascimento) => {
+const criar = async ({cpf, cpfIv, cpfTag, nomeCompleto, dataAniversario, email, phone_number, senhaHash, senhaSalt}) => {
     const [resultado] = await db.query(
-        "INSERT INTO usuarios (nome_completo, cpf, email, telefone, data_nascimento) VALUES (?, ?, ?, ?, ?)",
-        [nome_completo, cpf, email, telefone, data_nascimento]
+        "INSERT INTO usuarios (cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number, senha_hash, senha_salt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [cpf, cpfIv, cpfTag, nomeCompleto, dataAniversario, email, phone_number, senhaHash, senhaSalt]
     );
 
     return {
         id: resultado.insertId,
         nome_completo,
+        data_aniversario,
         cpf,
         email,
-        telefone,
-        data_nascimento
+        phone_number,
     };
 };
 
-const editar = async (id, nome_completo, cpf, email, telefone, data_nascimento) => {
+const editar = async (id, nome_completo, cpf, email, phone_number, data_aniversario) => {
     await db.query(
-        "UPDATE usuarios SET nome_completo = ?, cpf = ?, email = ?, telefone = ?, data_nascimento = ? WHERE id = ?",
-        [nome_completo, cpf, email, telefone, data_nascimento, id]
+        "UPDATE usuarios SET nome_completo = ?, cpf = ?, email = ?, phone_number = ?, data_aniversario = ? WHERE id = ?",
+        [nome_completo, cpf, email, phone_number, data_aniversario, id]
     );
 
     return {
@@ -44,8 +44,8 @@ const editar = async (id, nome_completo, cpf, email, telefone, data_nascimento) 
         nome_completo,
         cpf,
         email,
-        telefone,
-        data_nascimento
+        phone_number,
+        data_aniversario
     };
 };
 
