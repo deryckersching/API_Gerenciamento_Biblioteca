@@ -1,5 +1,7 @@
 const usuariosModel = require("../models/usuariosModel");
-
+const { gerarHash } = require("../utils/crypto/hash");
+const { criptografar, descriptografar } = require("../utils/crypto/criptografia");
+ 
 const buscarUsuarios = async (req, res) => {
     const usuarios = await usuariosModel.buscarTodos();
 

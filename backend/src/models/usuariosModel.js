@@ -2,7 +2,7 @@ const db = require("../config/database");
 
 const buscarTodos = async () => {
     const [resultado] = await db.query(
-        "SELECT * FROM usuarios"
+        "SELECT id, cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number FROM usuarios"
     );
 
     return resultado;
@@ -10,26 +10,21 @@ const buscarTodos = async () => {
 
 const buscarPorId = async (id) => {
     const [resultado] = await db.query(
-        "SELECT * FROM usuarios WHERE id = ?",
+        "SELECT id, cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number FROM usuarios WHERE id = ?",
         [id]
     );
 
     return resultado[0];
 };
 
-const criar = async ({cpf, cpfIv, cpfTag, nomeCompleto, dataAniversario, email, phone_number, senhaHash, senhaSalt}) => {
+const criar = async ({cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number, senha_hash, senha_salt}) => {
     const [resultado] = await db.query(
         "INSERT INTO usuarios (cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number, senha_hash, senha_salt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [cpf, cpfIv, cpfTag, nomeCompleto, dataAniversario, email, phone_number, senhaHash, senhaSalt]
+        [cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number, senha_hash, senha_salt]
     );
 
     return {
         id: resultado.insertId,
-        nome_completo,
-        data_aniversario,
-        cpf,
-        email,
-        phone_number,
     };
 };
 

@@ -1,5 +1,3 @@
-DROP DATABASE IF EXISTS biblioteca;
-
 CREATE DATABASE biblioteca;
 USE biblioteca;
 
@@ -39,6 +37,10 @@ CREATE TABLE usuarios (
     senha_hash BINARY(64) NOT NULL,
     senha_salt BINARY(16) NOT NULL
 );
+
+ALTER TABLE usuarios
+	ADD COLUMN senha_salt BINARY(16) NOT NULL,
+	MODIFY COLUMN senha_hash BINARY (64) NOT NULL;
 
 -- 5. RELACIONAMENTO AUTORES x LIVROS --
 CREATE TABLE autores_has_livros (
