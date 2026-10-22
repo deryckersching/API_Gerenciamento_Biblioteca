@@ -1,60 +1,80 @@
-const db = require("../config/database");
 
-const buscarTodos = async () => {
-    const [autores] = await db.query(
-        "SELECT * FROM autores;"
-    );
+const bd = require("../config/database/conexao");
 
-    return autores;
-}
+async function buscarTodos() {
+    const sql = `
+        SELECT *
+        FROM autores;
+    `;
+    const [resultado] = await bd.execute(sql);
 
-const buscarPorId = async (id) => {
-    const [autores] = await db.query(
-        "SELECT * FROM autores WHERE id = ?;",
-        [id]
-    );
+    return resultado;
+};
 
-    return autores[0];
-}
+async function buscarPorId(id) {
+    const sql = `
+        SELECT *
+        FROM autores
+        WHERE id = ?;
+    `;
+    const [resultado] = await bd.execute(sql, [id]);
 
-const criar = async (nome_completo, nacionalidade, data_nascimento) => {
-    const autor = await db.query(
-        "INSERT INTO autores (nome_completo, nacionalidade, data_nascimento) VALUES (?, ?, ?);",
-        [nome_completo, nacionalidade, data_nascimento]
-    );
+    return resultado;
+};
 
-    return {
-        id: autor.insertId,
+async function criar({ nome_completo, nacionalidade, data_nascimento }) {
+    const sql = `
+        INSERT INTO autores (nome_completo, nacionalidade, data_nascimento)
+        VALUES (?, ?, ?);
+    `;
+    const [resultado] = await bd.execute(sql, [
         nome_completo,
         nacionalidade,
         data_nascimento
+    ]);
+
+    return resultado;
+};
+
+async function editar(id, dados) {
+    const camposPermitidos = [
+        "nome_completo",
+        "nacionalidade",
+        "data_nascimento"
+    ];
+
+    const campos = Object.keys(dados);
+
+    if (
+        campos.length === 0 ||
+        campos.some(campo => !camposPermitidos.includes(campo))
+    ) {
+        throw new Error("Campos (variáveis) de atualização inválidos");
     };
-}
 
-const editar = async (id, nome_completo, nacionalidade, data_nascimento) => {
-    await db.query(
-        "UPDATE autores SET nome_completo=?, nacionalidade=?, data_nascimento=? WHERE id=?",
-        [nome_completo, nacionalidade, data_nascimento, id]
-    );
+    const atribuicoes = campos.map(campo => `\`${campo}\` = ?`).join(", ");
+    const valores = campos.map(campo => dados[campo]);
 
-    return {
-        id,
-        nome_completo,
-        nacionalidade,
-        data_nascimento
-    };
-}
+    const sql = `
+        UPDATE autores
+        SET ${atribuicoes}
+        WHERE id = ?;
+    `;
 
-const excluir = async (id) => {
-    const [resultado] = await db.query(
-        "DELETE FROM autores WHERE id=?",
-        [id]
-    );
+    const [resultado] = await bd.execute(sql, [...valores, id]);
 
-    console.log("resultado.affectedRows:\n", resultado.affectedRows);
+    return resultado;
+};
+
+async function excluir(id) {
+    const sql = `
+        DELETE FROM autores
+        WHERE id = ?;
+    `;
+    const [resultado] = await bd.execute(sql, [id]);
 
     return resultado.affectedRows;
-}
+};
 
 module.exports = {
     buscarTodos,

@@ -1,51 +1,71 @@
-const db = require("../config/database");
 
-const buscarTodos = async () => {
-    const [resultado] = await db.query(
-        "SELECT * FROM generos"
-    );
+const bd = require("../config/database/conexao");
+
+async function buscarTodos() {
+    const sql = `
+        SELECT *
+        FROM generos;
+    `;
+    const [resultado] = await bd.execute(sql);
 
     return resultado;
 };
 
-const buscarPorId = async (id) => {
-    const [resultado] = await db.query(
-        "SELECT * FROM generos WHERE id = ?",
-        [id]
-    );
+async function buscarPorId(id) {
+    const sql = `
+        SELECT *
+        FROM generos
+        WHERE id = ?;
+    `;
+    const [resultado] = await bd.execute(sql, [id]);
 
-    return resultado[0];
+    return resultado;
 };
 
-const criar = async (nome) => {
-    const [resultado] = await db.query(
-        "INSERT INTO generos (nome) VALUES (?)",
-        [nome]
-    );
+async function criar({ nome }) {
+    const sql = `
+        INSERT INTO generos (nome)
+        VALUES (?);
+    `;
+    const [resultado] = await bd.execute(sql, [nome]);
 
-    return {
-        id: resultado.insertId,
-        nome
+    return resultado;
+};
+
+async function editar(id, dados) {
+    const camposPermitidos = [
+        "nome"
+    ];
+
+    const campos = Object.keys(dados);
+
+    if (
+        campos.length === 0 ||
+        campos.some(campo => !camposPermitidos.includes(campo))
+    ) {
+        throw new Error("Campos (variáveis) de atualização inválidos");
     };
+
+    const atribuicoes = campos.map(campo => `\`${campo}\` = ?`).join(", ");
+    const valores = campos.map(campo => dados[campo]);
+
+    const sql = `
+        UPDATE generos
+        SET ${atribuicoes}
+        WHERE id = ?;
+    `;
+
+    const [resultado] = await bd.execute(sql, [...valores, id]);
+
+    return resultado;
 };
 
-const editar = async (id, nome) => {
-    await db.query(
-        "UPDATE generos SET nome = ? WHERE id = ?",
-        [nome, id]
-    );
-
-    return {
-        id,
-        nome
-    };
-};
-
-const excluir = async (id) => {
-    const [resultado] = await db.query(
-        "DELETE FROM generos WHERE id = ?",
-        [id]
-    );
+async function excluir(id) {
+    const sql = `
+        DELETE FROM generos
+        WHERE id = ?;
+    `;
+    const [resultado] = await bd.execute(sql, [id]);
 
     return resultado.affectedRows;
 };

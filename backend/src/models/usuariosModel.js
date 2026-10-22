@@ -1,54 +1,81 @@
-const db = require("../config/database");
+const bd = require("../config/database/conexao");
 
-const buscarTodos = async () => {
-    const [resultado] = await db.query(
-        "SELECT id, cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number FROM usuarios"
-    );
+async function buscarTodos() {
+    const sql = `
+        SELECT id, nome_completo, data_aniversario, email, telefone 
+        FROM usuarios;
+    `;
+    const [resultado] = await bd.execute(sql);
 
     return resultado;
 };
 
-const buscarPorId = async (id) => {
-    const [resultado] = await db.query(
-        "SELECT id, cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number FROM usuarios WHERE id = ?",
-        [id]
-    );
+async function buscarPorId(id) {
+    const sql = `
+        SELECT * 
+        FROM usuarios 
+        WHERE id = ?;
+    `;
+    const [resultado] = await bd.execute(sql, [id]);
 
-    return resultado[0];
+    return resultado;
 };
 
-const criar = async ({cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number, senha_hash, senha_salt}) => {
-    const [resultado] = await db.query(
-        "INSERT INTO usuarios (cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number, senha_hash, senha_salt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, phone_number, senha_hash, senha_salt]
-    );
+async function criar({ cpf, cpfIv, cpfTag, nomeCompleto, dataAniversario, email, telefone, senhaHash, senhaSalt }) {
+    const sql = `
+        INSERT INTO usuarios (cpf, cpf_iv, cpf_tag, nome_completo, data_aniversario, email, telefone, senha_hash, senha_salt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+    `;
+    const [resultado] = await bd.execute(sql, [
+        cpf, cpfIv, cpfTag, nomeCompleto, dataAniversario, email, telefone, senhaHash, senhaSalt
+    ]);
 
-    return {
-        id: resultado.insertId,
+    return resultado;
+};
+
+async function editar(id, dados) {
+    const camposPermitidos = [
+         "cpf", 
+         "cpfIv", 
+         "cpfTag", 
+         "nomeCompleto", 
+         "dataAniversario", 
+         "email", 
+         "telefone", 
+         "senhaHash", 
+         "senhaSalt"
+    ];
+    const campos = Object.keys(dados);
+
+    // campos.some() --> Verifica se pelo menos UM campo atende x condição
+    // camposPermitidos.includes(campo) --> Verifica se o campo existe na lista
+    // ! --> Valor invertido
+    if(campos.length === 0 || campos.some(campo => !camposPermitidos.includes(campo))) {
+        throw new Error("Campos(Variáveis) de atualizaçãio inválidos");
     };
+
+    const atribuicoes = campos.map(campo => `\`${campo}\` = ?`).join(", ");
+    const valores = campos.map(campo => dados[campo]);
+    const sql = `
+        UPDATE usuarios
+        SET ${atribuicoes}
+        WERE id = ?;
+    `;
+
+    // spread operator
+    const [resultado] = await bd.execute(sql, [...valores, id]);
+
+    return resultado;
+
+
 };
 
-const editar = async (id, nome_completo, cpf, email, phone_number, data_aniversario) => {
-    await db.query(
-        "UPDATE usuarios SET nome_completo = ?, cpf = ?, email = ?, phone_number = ?, data_aniversario = ? WHERE id = ?",
-        [nome_completo, cpf, email, phone_number, data_aniversario, id]
-    );
-
-    return {
-        id,
-        nome_completo,
-        cpf,
-        email,
-        phone_number,
-        data_aniversario
-    };
-};
-
-const excluir = async (id) => {
-    const [resultado] = await db.query(
-        "DELETE FROM usuarios WHERE id = ?",
-        [id]
-    );
+async function excluir(id) {
+    const sql = `
+        DELETE FROM usuarios 
+        WHERE id = ?;
+    `;
+    const [resultado] = await bd.execute(sql, [id]);
 
     return resultado.affectedRows;
 };

@@ -1,81 +1,121 @@
+
 const livrosModel = require("../models/livrosModel");
 
-const buscarLivros = async (req, res) => {
-    const livros = await livrosModel.buscarTodos();
+async function buscarTodos(req, res) {
+    try {
+        const livros = await livrosModel.buscarTodos();
 
-    res.json(livros);
+        return res.json(livros);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao buscar livros"
+        });
+    };
 };
 
-const buscarLivrosPorId = async (req, res) => {
-    const id = req.params.id;
-    const livro = await livrosModel.buscarPorId(id);
+async function buscarPorId(req, res) {
+    try {
+        const id = req.params.id;
+        const livro = await livrosModel.buscarPorId(id);
 
-    if(!livro) {
-        return res.status(404).json({
-            mensagem: "Livro não encontrado"
-        })
-    }
+        if (!livro || livro.length === 0) {
+            return res.status(404).json({
+                error: "Livro não encontrado"
+            });
+        };
 
-    res.json(livro);
+        return res.json(livro);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao buscar livro"
+        });
+    };
 };
 
-const criarLivro = async (req, res) => {
-    const novoLivro = await livrosModel.criar(
-        req.body.titulo,
-        req.body.isbn,
-        req.body.ano_publicacao,
-        req.body.numero_paginas,
-        req.body.sinopse
-    );
+async function criar(req, res) {
+    try {
+        const {
+            titulo,
+            isbn,
+            ano_publicacao,
+            numero_paginas,
+            sinopse
+        } = req.body;
 
-    res.status(201).json(novoLivro);
+        const novoLivro = await livrosModel.criar({
+            titulo,
+            isbn,
+            ano_publicacao,
+            numero_paginas,
+            sinopse
+        });
+
+        return res.status(201).json({
+            mensagem: "Livro criado com sucesso",
+            id: novoLivro.insertId
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao criar livro"
+        });
+    };
 };
 
-const editarLivro = async (req, res) => {
-    const id = req.params.id;
+async function editar(req, res) {
+    try {
+        const id = req.params.id;
+        const livro = await livrosModel.buscarPorId(id);
 
-    const livro = await livrosModel.buscarPorId(id);
+        if (!livro || livro.length === 0) {
+            return res.status(404).json({
+                error: "Livro não encontrado"
+            });
+        };
 
-    if(!livro) {
-        return res.status(404).json({
-            mensagem: "Livro não encontrado"
-        })
-    }
+        await livrosModel.editar(id, req.body);
 
-    const livroAtualizado = await livrosModel.editar(
-        id,
-        req.body.titulo,
-        req.body.isbn,
-        req.body.ano_publicacao,
-        req.body.numero_paginas,
-        req.body.sinopse
-    );
-
-    res.json(livroAtualizado);
+        return res.json({
+            mensagem: "Livro editado com sucesso"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao editar livro"
+        });
+    };
 };
 
-const excluirLivro = async (req, res) => {
-    const id = req.params.id;
+async function excluir(req, res) {
+    try {
+        const id = req.params.id;
+        const livro = await livrosModel.buscarPorId(id);
 
-    const livro = await livrosModel.buscarPorId(id);
+        if (!livro || livro.length === 0) {
+            return res.status(404).json({
+                error: "Livro não encontrado"
+            });
+        };
 
-    if(!livro) {
-        return res.status(404).json({
-            mensagem: "Livro não encontrado"
-        })
-    }
+        await livrosModel.excluir(id);
 
-    await livrosModel.excluir(id);
-
-    res.json({
-        mensagem: "Livro excluído com sucesso!"
-    })
+        return res.json({
+            mensagem: "Livro excluído com sucesso"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao excluir livro"
+        });
+    };
 };
 
 module.exports = {
-    buscarLivros,
-    buscarLivrosPorId,
-    criarLivro,
-    editarLivro,
-    excluirLivro
+    buscarTodos,
+    buscarPorId,
+    criar,
+    editar,
+    excluir
 };

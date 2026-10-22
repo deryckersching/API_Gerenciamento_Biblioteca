@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
+
 const emprestimosController = require("../controllers/emprestimosController");
 
-router.get("/emprestimos", emprestimosController.buscarEmprestimos);
-router.get("/emprestimos/:id", emprestimosController.buscarEmprestimosPorId);
-router.post("/emprestimos", emprestimosController.criarEmprestimo);
-router.put("/emprestimos/:id", emprestimosController.editarEmprestimo);
-router.delete("/emprestimos/:id", emprestimosController.excluirEmprestimo);
+router.get("/", emprestimosController.buscarTodos);
+router.get("/:id", emprestimosController.buscarPorId);
+router.post("/", emprestimosController.criar);
+router.put("/:id", emprestimosController.editar);
+router.delete("/:id", emprestimosController.excluir);
 
 module.exports = router;

@@ -1,89 +1,117 @@
+
 const autoresModel = require("../models/autoresModel");
 
-const buscarAutores = async (req, res) => {
-    const autores = await autoresModel.buscarTodos();
+async function buscarTodos(req, res) {
+    try {
+        const autores = await autoresModel.buscarTodos();
 
-    res.json(autores);
-};
-
-const buscarAutoresPorId = async (req, res) => {
-    const id = req.params.id;
-    const autor = await autoresModel.buscarPorId(id);
-
-    if (!autor) {
-        return res.status(404).json({
-            mensagem: "Autor não encontrado"
+        return res.json(autores);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao buscar autores"
         });
-    }
-
-    res.json(autor);
+    };
 };
 
-const criarAutor = async (req, res) => {
-    const {
-        nome_completo,
-        nacionalidade,
-        data_nascimento
-    } = req.body;
+async function buscarPorId(req, res) {
+    try {
+        const id = req.params.id;
+        const autor = await autoresModel.buscarPorId(id);
 
-    const novoAutor = await autoresModel.criar(
-        nome_completo,
-        nacionalidade,
-        data_nascimento
-    );
+        if (!autor || autor.length === 0) {
+            return res.status(404).json({
+                error: "Autor não encontrado"
+            });
+        };
 
-    res.status(201).json(novoAutor);
-};
-
-const editarAutor = async (req, res) => {
-    const id = req.params.id;
-
-    const autor = await autoresModel.buscarPorId(id);
-
-    if (!autor) {
-        return res.status(404).json({
-            mensagem: "Autor não encontrado"
+        return res.json(autor);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao buscar autor"
         });
-    }
-
-    const {
-        nome_completo,
-        nacionalidade,
-        data_nascimento
-    } = req.body;
-
-    const autorAtualizado = await autoresModel.editar(
-        id,
-        nome_completo,
-        nacionalidade,
-        data_nascimento
-    );
-
-    res.json(autorAtualizado);
+    };
 };
 
-const excluirAutor = async (req, res) => {
-    const id = req.params.id;
+async function criar(req, res) {
+    try {
+        const {
+            nome_completo,
+            nacionalidade,
+            data_nascimento
+        } = req.body;
 
-    const autor = await autoresModel.buscarPorId(id);
-
-    if (!autor) {
-        return res.status(404).json({
-            mensagem: "Autor não encontrado"
+        const novoAutor = await autoresModel.criar({
+            nome_completo,
+            nacionalidade,
+            data_nascimento
         });
-    }
 
-    await autoresModel.excluir(id);
+        return res.status(201).json({
+            mensagem: "Autor criado com sucesso",
+            id: novoAutor.insertId
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao criar autor"
+        });
+    };
+};
 
-    res.json({
-        mensagem: "Autor excluído com sucesso"
-    });
+async function editar(req, res) {
+    try {
+        const id = req.params.id;
+        const autor = await autoresModel.buscarPorId(id);
+
+        if (!autor || autor.length === 0) {
+            return res.status(404).json({
+                error: "Autor não encontrado"
+            });
+        };
+
+        await autoresModel.editar(id, req.body);
+
+        return res.json({
+            mensagem: "Autor editado com sucesso"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao editar autor"
+        });
+    };
+};
+
+async function excluir(req, res) {
+    try {
+        const id = req.params.id;
+        const autor = await autoresModel.buscarPorId(id);
+
+        if (!autor || autor.length === 0) {
+            return res.status(404).json({
+                error: "Autor não encontrado"
+            });
+        };
+
+        await autoresModel.excluir(id);
+
+        return res.json({
+            mensagem: "Autor excluído com sucesso"
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            error: "Erro ao excluir autor"
+        });
+    };
 };
 
 module.exports = {
-    buscarAutores,
-    buscarAutoresPorId,
-    criarAutor,
-    editarAutor,
-    excluirAutor
+    buscarTodos,
+    buscarPorId,
+    criar,
+    editar,
+    excluir
 };

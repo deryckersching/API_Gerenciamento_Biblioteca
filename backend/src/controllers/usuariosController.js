@@ -1,91 +1,154 @@
 const usuariosModel = require("../models/usuariosModel");
-const { gerarHash } = require("../utils/crypto/hash");
+const { gerarHashSenha, verificarHashSenha } = require("../utils/crypto/hash");
 const { criptografar, descriptografar } = require("../utils/crypto/criptografia");
- 
-const buscarUsuarios = async (req, res) => {
-    const usuarios = await usuariosModel.buscarTodos();
 
-    res.json(usuarios);
+async function buscarTodos(req, res) {
+    try {
+        const usuarios = await usuariosModel.buscarTodos();
+        return res.json(usuarios);
+    } catch(error) {
+        console.log(error);
+        return res.status(500).json({error: "Erro ao buscar usuários"});
+    };
 };
 
-const buscarUsuariosPorId = async (req, res) => {
-    const id = req.params.id;
-    const usuario = await usuariosModel.buscarPorId(id);
+const buscarPorId = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const usuario = await usuariosModel.buscarPorId(id);
 
-    if(!usuario) {
-        return res.status(404).json({
-            mensagem: "Usuário não encontrado"
-        })
-    }
+        if(!usuario){
+            return res.status(404).json({error: "Usuário não encontrado"});
+        };
 
-    res.json(usuario);
+        const cpf = descriptografar({
+            ivArmazenado: usuario.cpf_iv, 
+            tagArmazenada: usuario.cpf_tag, 
+            valorArmazenado: usuario.cpf
+        });
+
+        return res.json({
+            id: usuario.id,
+            cpf: cpf,
+            nomeCompleto: usuario.nome_completo,
+            dataAniversario: usuario.data_aniversario,
+            email: usuario.email,
+            telefone: usuario.telefone
+        });
+    } catch(error) {
+        console.log(error);
+        return res.status(500).json({error: "Erro ao buscar usuário"});
+    };
 };
 
-const criarUsuario = async (req, res) => {
-    const novoUsuario = await usuariosModel.criar(
-        req.body.nome_completo,
-        req.body.cpf,
-        req.body.cpf_iv,
-        req.body.cpf_tag,
-        req.body.data_aniversario,
-        req.body.email,
-        req.body.phone_number,
-        req.body.senha_hash,
-        req.body.senha_salt
-    );
+async function editar(req, res) {
+    try {
+        const id = req.params.id;
+        const usuario = await usuariosModel.buscarPorId(id);
 
-    res.status(201).json(novoUsuario);
+        if(!usuario) {
+            return res.status(404).json({
+                error: "Usuário não encontrado"
+            });
+        };
+
+        const { cpf, nomeCompleto, dataNascimento, email, telefone, senha } = req.body;
+        const dadosAtualizados = {};
+
+        if(nomeCompleto !== undefined) {
+            dadosAtualizados.nomeCompleto = nomeCompleto;
+        }
+
+        if(dataNascimento !== undefined) {
+            dadosAtualizados.dataNascimento = dataNascimento;
+        }
+
+        if(email !== undefined) {
+            dadosAtualizados.email = email;
+        }
+
+        if(telefone !== undefined) {
+            dadosAtualizados.telefone = telefone;
+        }
+
+        if(cpf !== undefined) {
+            const { iv: cpfIv, tag: cpfTag, valorCriptografado: cpfCriptografado } = criptografar(cpf);
+            dadosAtualizados.cpf = cpf;
+            dadosAtualizados.cpfIv = cpf;
+            dadosAtualizados.cpfTag = cpfTag;
+        };
+
+        if(senha !== undefined) {
+            const { salt: senhaSalt, hash: senhaHash } = gerarHashSenha(senha);
+            dadosAtualizados.senhaSalt = senhaSalt;
+            dadosAtualizados.senhaHash = senhaHash;
+            
+        };
+
+        await usuariosModel.editar(id, dadosAtualizados);
+
+        return res.json({
+            mensagem: "Usuário editado com sucesso"
+        });
+    }catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            mensagem: "Erro ao editar usuário"
+        });
+    };
 };
 
-const editarUsuario = async (req, res) => {
-    const id = req.params.id;
+async function criar(req, res) {
+    try {
+        const { cpf, nomeCompleto, dataAniversario, email, telefone, senha } = req.body;
+        const { salt, hash } = await gerarHashSenha(senha);
+        const { iv: cpfIv, tag: cpfTag, valorCriptografado: cpfCriptografado } = criptografar(cpf);
 
-    const usuario = await usuariosModel.buscarPorId(id);
+        await usuariosModel.criar({
+            cpf: cpfCriptografado, 
+            cpfIv: iv, 
+            cpfTag: tag, 
+            nomeCompleto, 
+            dataAniversario, 
+            email, 
+            telefone, 
+            senhaHash: hash, 
+            senhaSalt: salt
+        });
 
-    if(!usuario) {
-        return res.status(404).json({
-            mensagem: "Usuário não encontrado"
-        })
-    }
-
-    const usuarioAtualizado = await usuariosModel.editar(
-        id,
-        req.body.nome_completo,
-        req.body.cpf,
-        req.body.cpf_iv,
-        req.body.cpf_tag,
-        req.body.data_aniversario,
-        req.body.email,
-        req.body.phone_number,
-        req.body.senha_hash,
-        req.body.senha_salt
-    );
-
-    res.json(usuarioAtualizado);
+        return res.status(201).json({
+            mensagem: "Usuário criado com sucesso"
+        });
+    } catch(error) {
+        console.log(error);
+        return res.status(500).json({error: "Erro ao criar usuário"});
+    };
 };
 
-const excluirUsuario = async (req, res) => {
-    const id = req.params.id;
+async function excluir(req, res) {
+    try {
+        const id = req.params.id;
+        const usuario = await usuariosModel.buscarPorId(id);
 
-    const usuario = await usuariosModel.buscarPorId(id);
+        if(!usuario){
+            return res.status(404).json({error: "Usuário não encontrado"});
+        };
 
-    if(!usuario) {
-        return res.status(404).json({
-            mensagem: "Usuário não encontrado"
-        })
-    }
+        await usuariosModel.excluir(id);
 
-    await usuariosModel.excluir(id);
-
-    res.json({
-        mensagem: "Usuário excluído com sucesso!"
-    })
+        return res.json({
+            mensagem: "Usuário excluído com sucesso"
+        });
+    } catch(error) {
+        console.log(error);
+        return res.status(500).json({error: "Erro ao excluir usuário"});
+    };
 };
 
 module.exports = {
-    buscarUsuarios,
-    buscarUsuariosPorId,
-    criarUsuario,
-    editarUsuario,
-    excluirUsuario
+    buscarTodos,
+    buscarPorId,
+    criar,
+    editar,
+    excluir
 };
