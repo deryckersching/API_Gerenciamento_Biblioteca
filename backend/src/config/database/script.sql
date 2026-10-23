@@ -1,5 +1,7 @@
 CREATE DATABASE biblioteca;
+
 USE biblioteca;
+SHOW TABLES;
 
 -- 1. TABELA DE AUTORES --
 CREATE TABLE autores (
@@ -8,6 +10,8 @@ CREATE TABLE autores (
     nacionalidade VARCHAR(80) NOT NULL,
     data_nascimento DATE
 );
+
+DESCRIBE usuarios;
 
 -- 2. TABELA DE LIVROS --
 CREATE TABLE livros (
@@ -18,6 +22,11 @@ CREATE TABLE livros (
     numero_paginas INT,
     sinopse TEXT
 );
+
+ALTER TABLE livros
+MODIFY COLUMN ano_publicacao SMALLINT;
+DESCRIBE livros;
+
 -- 3. TABELA DE GENEROS --
 CREATE TABLE generos (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -26,16 +35,16 @@ CREATE TABLE generos (
 
 -- 4. TABELA DE USUARIOS --
 CREATE TABLE usuarios (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    cpf VARBINARY(20) NOT NULL,
-    cpf_iv BINARY(12) NOT NULL,
-    cpf_tag BINARY(16) NOT NULL,
-    nome_completo VARCHAR(150) NOT NULL,
-    data_aniversario DATE NOT NULL,
+	id INT PRIMARY KEY AUTO_INCREMENT,
+    cpf VARBINARY(32) NOT NULL,
+    cpfIv BINARY(12) NOT NULL,
+    cpfTag BINARY(16) NOT NULL,
+    nomeCompleto VARCHAR(150) NOT NULL,
+    dataNascimento DATE NOT NULL,
     email VARCHAR(200) NOT NULL UNIQUE,
-    phone_number BIGINT NOT NULL UNIQUE,
-    senha_hash BINARY(64) NOT NULL,
-    senha_salt BINARY(16) NOT NULL
+    telefone BIGINT NOT NULL UNIQUE,
+    senhaSalt BINARY(16) NOT NULL,
+    senhaHash BINARY(64) NOT NULL
 );
 
 ALTER TABLE usuarios
